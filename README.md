@@ -36,5 +36,5 @@ Example hosted URL (replace with yours):
 1. **Clone the repo**:
 
 ```bash
-git clone https://github.com/<your-username>/<repo-name>.git
-cd <repo-name>
+git clone [https://github.com/<your-username>/<repo-name>.](https://github.com/farhad-fbm/font-style-generator).git
+cd font-style-generator
