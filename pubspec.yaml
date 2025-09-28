@@ -1,0 +1,89 @@
+name: flutter_helper
+description: "A new Flutter project."
+publish_to: 'none' 
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  flutter_screenutil: ^5.9.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+  build_runner:
+  flutter_gen_runner: 
+
+
+flutter_gen:
+  # parse_metadata: true # <- Build Time: Add this line (default: false)
+  output: lib/gen/
+  line_length: 120
+  # Optional
+  # integrations:
+  #   image: true
+  #   flutter_svg: true
+  #   rive: true
+  #   lottie: true
+  colors:
+    inputs:
+      - assets/colors/colors.xml
+    outputs:
+      class_name: AppColors
+
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icons/
+    - assets/images/
+    - assets/lotties/
+
+  fonts:
+  - family: SF_Pro_Regular
+    fonts:
+      - asset: assets/fonts/SF_Pro_Regular.otf
+
+  - family: SF_Pro_Medium
+    fonts:
+      - asset: assets/fonts/SF_Pro_Medium.otf
+
+  - family: SF_Pro_SemiBold
+    fonts:
+      - asset: assets/fonts/SF_Pro_SemiBold.otf
+
+  - family: SF_Pro_Bold
+    fonts:
+      - asset: assets/fonts/SF_Pro_Bold.otf
+
+  - family: Inter_Regular
+    fonts:
+      - asset: assets/fonts/Inter_Regular.ttf
+
+  - family: Inter_Medium
+    fonts:
+      - asset: assets/fonts/Inter_Medium.ttf
+
+  - family: Inter_Bold
+    fonts:
+      - asset: assets/fonts/Inter_Bold.ttf
+      
+  - family: Poppins_Regular
+    fonts:
+      - asset: assets/fonts/Poppins_Regular.ttf
+
+  - family: Urbanist_Medium
+    fonts:
+      - asset: assets/fonts/Urbanist_Medium.ttf
+
+  - family: Urbanist_SemiBold
+    fonts:
+      - asset: assets/fonts/Urbanist_SemiBold.ttf
+
