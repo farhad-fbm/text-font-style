@@ -1,7 +1,8 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_helper/snippet_2.dart';
 
-import 'snippet.dart';
+// import 'snippet.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       
-      home: FontStyleGenerator(),
+      home: FontStyleGenerator2(),
     );
   }
 }
