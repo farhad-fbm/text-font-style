@@ -1,8 +1,5 @@
-
 import 'package:flutter/material.dart';
-import 'package:flutter_helper/snippet_2.dart';
-
-// import 'snippet.dart';
+import 'navbar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,8 +13,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      
-      home: FontStyleGenerator2(),
+
+      home: ScrollableBottomNav(),
     );
   }
 }

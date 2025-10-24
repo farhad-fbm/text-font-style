@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class Snippet2 extends StatefulWidget {
-  const Snippet2({super.key});
+class Snippet1 extends StatefulWidget {
+  const Snippet1({super.key});
 
   @override
-  State<Snippet2> createState() => _Snippet2State();
+  State<Snippet1> createState() => _Snippet1State();
 }
 
-class _Snippet2State extends State<Snippet2> {
-  final TextEditingController colorController = TextEditingController();
-  final TextEditingController fontSpecController = TextEditingController();
+class _Snippet1State extends State<Snippet1> {
+  final TextEditingController specController = TextEditingController();
 
   String outputColor = "";
   String outputStyle = "";
@@ -19,36 +18,54 @@ class _Snippet2State extends State<Snippet2> {
   bool styleCopied = false;
 
   void generate() {
-    String colorHex = colorController.text.trim().replaceAll(
-      "#",
-      "",
-    ); // remove '#' if present
-    final fontSpec = fontSpecController.text.trim();
+    final spec = specController.text.trim();
+    if (spec.isEmpty) return;
 
-    // if (colorHex.isEmpty || fontSpec.isEmpty) return;
+    final colorMatch = RegExp(r'#([A-Fa-f0-9]{3,8})').firstMatch(spec);
+    String colorHex = colorMatch?.group(1)?.toUpperCase() ?? "000000";
 
-    // Extract font props from CSS-like input
-    final family = _extract(fontSpec, "font-family") ?? "";
-    final weight = _extract(fontSpec, "font-weight") ?? "";
-    final style = _extract(fontSpec, "font-style") ?? "";
-    final size = _extract(fontSpec, "font-size")?.replaceAll("px", "") ?? "";
+    // Normalize short hex codes like #FFF → FFFFFF or #FF2ED → FF2EDD
+    if (colorHex.length == 3) {
+      colorHex = colorHex.split('').map((c) => '$c$c').join(); // RGB → RRGGBB
+    } else if (colorHex.length == 4) {
+      // e.g. #ABCD → AABBCCDD
+      colorHex = colorHex.split('').map((c) => '$c$c').join();
+    } else if (colorHex.length == 5) {
+      // e.g. #FF2ED → FF2EDD (pad last char)
+      colorHex = colorHex.padRight(6, colorHex.characters.last);
+    }
+
+    // Extract font properties
+    final family =
+        _extract(
+          spec,
+          "font-family",
+        )?.replaceAll('"', '').replaceAll("'", "") ??
+        "SF Pro";
+    String weight = _extract(spec, "font-weight") ?? "400";
+    final size = _extract(spec, "font-size")?.replaceAll("px", "") ?? "16";
+
+    // Map weight → style name
+    final weightToStyle = {
+      "400": "Regular",
+      "500": "Medium",
+      "600": "SemiBold",
+      "700": "Bold",
+      "800": "ExtraBold",
+    };
+    final styleName = weightToStyle[weight] ?? "Regular";
 
     // Format
-    final colorKey = "c${colorHex.toUpperCase()}";
+    final colorKey = "c$colorHex";
     final fontFamilyForVar =
-        "${family.replaceAll(" ", "").replaceAll("_", "")}$style";
-    final fontFamilyForCode = "${family.replaceAll(" ", "_")}_$style";
-    final variableName =
-        "textStyle${size}c${colorHex.toUpperCase()}$fontFamilyForVar$weight";
+        "${family.replaceAll(" ", "").replaceAll("_", "")}$styleName";
+    final fontFamilyForCode = "${family.replaceAll(" ", "_")}_$styleName";
+    final variableName = "textStyle${size}c$colorHex$fontFamilyForVar$weight";
 
     // Outputs
     setState(() {
-      outputColor =
-          '<color name="$colorKey">#FF${colorHex.toUpperCase()}</color>';
-      outputStyle =
-          fontSpec.isEmpty
-              ? ''
-              : '''
+      outputColor = '<color name="$colorKey">#FF$colorHex</color>';
+      outputStyle = '''
 static final $variableName = TextStyle(
   fontFamily: "$fontFamilyForCode",
   fontFamilyFallback: const ['DMSans', 'Open Sans', 'Roboto', 'Noto Sans'],
@@ -57,7 +74,6 @@ static final $variableName = TextStyle(
   fontWeight: FontWeight.w$weight,
 );
 ''';
-
       colorCopied = false;
       styleCopied = false;
     });
@@ -78,7 +94,7 @@ static final $variableName = TextStyle(
     if (content.isEmpty) return const SizedBox.shrink();
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
@@ -96,7 +112,7 @@ static final $variableName = TextStyle(
                   ? const Text(
                     "Copied",
                     style: TextStyle(
-                      color: Colors.green,
+                      color: Colors.grey,
                       fontWeight: FontWeight.bold,
                     ),
                   )
@@ -120,7 +136,6 @@ static final $variableName = TextStyle(
   void copyToClipboard(String text, VoidCallback setCopiedFlag) {
     Clipboard.setData(ClipboardData(text: text));
     setCopiedFlag();
-    // Reset after 1 second
     Future.delayed(const Duration(seconds: 1), () {
       setState(() {
         if (text == outputColor) colorCopied = false;
@@ -139,20 +154,20 @@ static final $variableName = TextStyle(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
-              controller: colorController,
+              controller: specController,
+              maxLines: 10,
               decoration: const InputDecoration(
-                labelText: "Color hex (e.g. #00C566)",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: fontSpecController,
-              maxLines: 6,
-              decoration: const InputDecoration(
-                labelText: "Font Spec (CSS style block)",
-                hintText:
-                    "font-family: SF Pro;\nfont-weight: 400;\nfont-style: Regular;\nfont-size: 16px;",
+                labelText: "CSS Block",
+                hintStyle: TextStyle(fontSize: 12, color: Colors.grey),
+                hintText: '''
+color: var(--Text-On-Light-Primary, #212B36);
+text-align: center;
+font-family: "SF Pro";
+font-size: 24px;
+font-weight: 590;
+line-height: 30px;
+letter-spacing: -0.1px;
+''',
                 border: OutlineInputBorder(),
               ),
             ),
